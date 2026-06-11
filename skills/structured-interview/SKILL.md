@@ -73,7 +73,7 @@ academic_basis:
 
 ### 3.3 examples/ 격리
 
-본 스킬 폴더에는 examples/가 없으며, 사람 참고용 시범 산출물은 `<workspace>/_archive/structured_interview_v0.1_examples/`에 격리되어 있음. SKILL.md·workflow.md·references/ 어디서도 examples를 참조하지 않음.
+본 스킬 폴더에는 examples/가 없으며, 사람 참고용 시범 산출물은 플러그인 배포물 외부에 격리되어 있음. SKILL.md·workflow.md·references/ 어디서도 examples를 참조하지 않음.
 
 ## 4. 워크플로우 (5 Steps)
 
@@ -136,14 +136,13 @@ Step 0: 모든 발동 시 먼저 `<워크스페이스>/.structured-interview/con
 
 | Version | 날짜 | 변경 |
 |---|---|---|
-| 0.1 | 2026-04-26 | 초기 패키징 (8 직무 + MVC 데이터 INSERT 완료) |
+| 0.1 | 2026-04-26 | 초기 패키징 |
 | 0.1.6 | 2026-06-02 | jd_fetch.md §1 Supabase URL·publishable key 정합화 |
 | 0.2.0 | 2026-06-03 | 하드닝(output_template 중복 §1 제거·질문 수 하드코딩 동적화·MCP 끊김 복구 §7.1) + L2 레벨별 BARS(§7) + 질문 기법 카탈로그(question_generation §6) |
 | 0.3.0 | 2026-06-03 | Supabase 연결 하드코딩 제거 → 최초 setup 워크플로우·config.json(`setup_connection.md`, Step 0) + MVC를 Supabase `mvc_*`로 이전해 편집 가능화(`mvc_schema.md`, 파일은 시드·폴백). 조직/타인 배포 시 각자 프로젝트 연결. |
 
 ## 10. 미해결 항목 (Open Items)
 
-- **레벨별 BARS DB 등록**: 작성 규칙·스키마·폴백은 v0.2.0 완료(`bars_anchoring.md §7`). `bars_anchors_by_level` 실제 등록 + 시니어 패널 검토는 별도 운영 작업 (`roadmap_v0.2_progress.md`)
+- **레벨별 BARS DB 등록**: 작성 규칙·스키마·폴백은 v0.2.0 완료(`bars_anchoring.md §7`). `bars_anchors_by_level` 실제 등록 + 시니어 패널 검토는 별도 운영 작업 (본 플러그인 외부에서 관리)
 - xlsx 자동 생성 스크립트 (로드맵 L1): 본 스킬 범위 외
 - T2 자동 처리 후 월 1회 사후 검토 루틴 (운영 정책)
-- (해소됨) research_* JD 미등록 — 2026-04 기준 positions 17직무 등록 완료, 본 항목 폐기

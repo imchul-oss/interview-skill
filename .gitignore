@@ -1,8 +1,8 @@
 # build / temp
 *.bak
 *.zip
-aim-interview.plugin
+*.plugin
 .DS_Store
 
 # local supabase connection config (never commit)
-.aim-interview/
+.structured-interview/

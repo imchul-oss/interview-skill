@@ -22,14 +22,12 @@ position_content 일부 섹션 누락? → Step C
 **메시지**:
 ```
 "{{직무명}}"는 아직 positions 테이블에 등록되지 않았습니다.
-현재 등록된 직무 9개:
-  - b2b_sales (B2B Sales)
-  - devops_engineer (DevOps Engineer)
-  - ...
+현재 등록된 직무 {{N}}개:
+  {{등록된 직무 목록 — positions에서 fetch한 name (job_title)}}
 
 이 직무를 신규 등록하시겠습니까?
 - (A) 예. 등록 진행 (이름·status·sort_order 입력 받음)
-- (B) 아니요. 위 9개 중에서 다시 선택
+- (B) 아니요. 위 목록에서 다시 선택
 - (C) 직무명 오타 — 정확한 이름 알려주세요
 ```
 

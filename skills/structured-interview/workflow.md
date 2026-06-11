@@ -51,7 +51,7 @@ WHERE position_name = $1 AND lang = $2;
 
 ### 2.1 다국어(lang) 매칭 규칙
 
-`positions.lang`과 `position_content.lang`이 다를 수 있습니다(예: marketing_lead = positions.lang='en' but JD는 ko/en 모두 존재). 다음 규칙을 적용:
+`positions.lang`과 `position_content.lang`이 다를 수 있습니다(예: positions.lang='en'인데 JD는 ko/en 모두 존재). 다음 규칙을 적용:
 
 1. **사용자 요청 lang 우선**: 사용자가 "한글 면접" 요청 → `position_content.lang='ko'` 사용
 2. **fallback 순서**: 요청 lang → ko → en 순으로 시도
@@ -79,10 +79,10 @@ SELECT * FROM public.v_active_interview_questions
 WHERE position_name = $1
 ORDER BY competency_key, question_order;
 
--- 현재 JD hash
+-- 현재 JD hash ($2 = Step 2.1에서 결정된 lang, 요청 lang → ko → en 폴백)
 SELECT section_key, MD5(content) AS hash
 FROM public.position_content
-WHERE position_name = $1 AND lang = 'ko'
+WHERE position_name = $1 AND lang = $2
 ORDER BY section_key;
 ```
 
@@ -121,12 +121,12 @@ ORDER BY section_key;
 
 | Tier | 처리 |
 |---|---|
-| **T1 (cosmetic)** | 자동: derived_from_jd_hash만 갱신 (질문 유지) + jd_change_log.diff_tier='T1' 기록 |
+| **T1 (cosmetic)** | 자동: 질문 내용은 그대로 둔 채 새 hash로 재-INSERT(version+1) + 이전 행 archive (`jd_diff_analysis.md §3.1` — UPDATE는 트리거가 차단) + jd_change_log.diff_tier='T1' 기록 |
 | **T2 (substantive equivalent)** | 자동: 새 질문 INSERT + 이전 행 archive(superseded_by 링크) + jd_change_log 기록 + 사용자에게 변경 알림 |
 | **T3 (capability change)** | **사용자 승인 게이트** — 변경 요약 보고 → 승인 시 새 INSERT + archive |
 
 ```sql
--- T2/T3 archive 처리 (immutability 트리거 우회 — is_active만 변경 허용)
+-- T1/T2/T3 archive 처리 (immutability 트리거는 is_active·archive_reason·superseded_by 변경만 허용)
 UPDATE public.interview_questions
 SET is_active = FALSE,
     archive_reason = 'jd_t2_substantive' OR 'jd_t3_capability_change',
@@ -177,7 +177,7 @@ references/output_template.md 변수 치환
 - [ ] `derived_from_jd_hash`가 응답에 인용되어 추적 가능한가
 - [ ] 모든 BARS 앵커가 5단계 차등이 명확한가
 - [ ] 꼬리질문이 모두 완전 문장(면접관 그대로 사용 가능)인가
-- [ ] Red Flag·Green Flag가 각각 3개 이상인가
+- [ ] Red Flag·Green Flag가 각각 4개 이상인가 (Step 4A 기준과 동일)
 - [ ] MVC 모듈이 부착되었는가
 
 ---

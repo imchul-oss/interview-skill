@@ -96,7 +96,8 @@ SELECT
   MD5(content) AS current,
   MD5(content) = $used_hash AS match
 FROM public.position_content
-WHERE position_name = $position_name AND lang = 'ko' AND section_key = $section_key;
+WHERE position_name = $position_name AND lang = $2 AND section_key = $section_key;
+-- $2 = Step 2에서 결정된 lang (요청 lang → ko → en 폴백, workflow.md §2.1)
 ```
 
 - `match = true` 모든 섹션 → INSERT 진행
@@ -107,7 +108,7 @@ WHERE position_name = $position_name AND lang = 'ko' AND section_key = $section_
 ## 4. 다국어 정책
 
 - **기본 lang**: `ko`
-- positions의 lang과 position_content의 lang이 다를 수 있음 (예: marketing_lead = positions.lang='en' but position_content.lang='ko')
+- positions의 lang과 position_content의 lang이 다를 수 있음 (예: positions.lang='en'인데 position_content.lang='ko'만 존재)
 - 면접 질문은 사용자 요청 시 한글이 기본. 영문 요청 시 lang='en' fetch
 
 ---
@@ -129,9 +130,18 @@ ORDER BY detected_at DESC;
 
 ## 6. 권한·RLS
 
-본 스킬은 `service_role` 또는 `authenticated` 권한으로 호출 가정. RLS 정책상:
-- `positions`, `position_content`: SELECT 모두 허용
-- `interview_questions`, `jd_change_log`: SELECT/INSERT/UPDATE 허용
+본 스킬은 **publishable key(`sb_publishable_*`, anon 롤)**로 호출한다 (§1, `setup_connection.md`). service_role(`sb_secret_*`)을 가정하지 않으며 어디에도 저장하지 않는다. 따라서 연결되는 Supabase 프로젝트에는 anon 롤 기준으로 다음 RLS 정책이 필요하다.
+
+| 테이블/뷰 | 필요 권한 | 용도 |
+|---|---|---|
+| `positions`, `position_content` | SELECT, INSERT | 직무·JD 조회 + 신규 직무 등록 (`new_position_workflow.md`) |
+| `interview_questions` | SELECT, INSERT, UPDATE (`is_active`·`archive_reason`·`superseded_by` 한정) | 질문 생성·archive — immutability 트리거가 그 외 컬럼 UPDATE를 차단 |
+| `jd_change_log` | SELECT, UPDATE (diff_tier·검토 필드) | 변경 이력 조회·tier 기록 (INSERT는 트리거 자동) |
+| `v_active_interview_questions` | SELECT | 활성 질문 + sync_status |
+| `mvc_values`·`mvc_questions`·`mvc_bars`·`mvc_flags`·`mvc_position_context` | SELECT, INSERT, UPDATE | MVC fetch·시드·편집 (`mvc_schema.md` §2·§4) |
+| `mvc_change_log` | SELECT, INSERT | MVC 편집 감사 로그 |
+
+위 정책이 없는 프로젝트에서는 해당 작업이 RLS에 의해 거부될 수 있다. 거부 시 추측·우회하지 않고, 필요한 정책을 사용자에게 안내하고 중단한다 (§7 오류 처리와 동일 원칙).
 
 ---
 

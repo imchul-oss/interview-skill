@@ -60,7 +60,7 @@ skills/
 | `mvc_values` / `mvc_questions` / `mvc_bars` / `mvc_flags` / `mvc_position_context` | **핵심가치 모듈(편집 가능)** — `mvc_schema.md` |
 | `mvc_change_log` | 핵심가치 편집 감사 로그 |
 
-스키마 DDL·마이그레이션은 `references/mvc_schema.md`(핵심가치)와 각 reference에 포함되어 있습니다. **DB 스키마/INSERT는 사용자 승인 후 1회 수행**하며, 미실행 시 파일 시드로 폴백합니다.
+핵심가치(`mvc_*`) 스키마 DDL·마이그레이션은 `references/mvc_schema.md`에 포함되어 있습니다. 코어 테이블(`positions`/`position_content`/`interview_questions`/`jd_change_log`/뷰·트리거)의 DDL은 본 바닐라 버전에 포함되지 않으므로, 각 reference의 쿼리·컬럼 설명을 기준으로 자신의 프로젝트에 직접 생성해야 합니다(필요한 RLS 정책 목록은 `references/jd_fetch.md §6`). **DB 스키마/INSERT는 사용자 승인 후 1회 수행**하며, 미실행 시 파일 시드로 폴백합니다.
 
 ---
 

@@ -11,8 +11,8 @@
 ```sql
 -- 1) 가치 마스터
 CREATE TABLE IF NOT EXISTS public.mvc_values (
-  value_key        TEXT PRIMARY KEY,            -- VALUE_1/VALUE_2/FOCUS/IMPACT/VALUE_5
-  name             TEXT NOT NULL,               -- "VALUE_1 (연대)"
+  value_key        TEXT PRIMARY KEY,            -- VALUE_1 ~ VALUE_5
+  name             TEXT NOT NULL,               -- 예) "VALUE_1 (<가치명>)"
   definition       TEXT NOT NULL,
   go_nogo_criterion TEXT NOT NULL,
   sort_order       INT  NOT NULL,
@@ -81,12 +81,12 @@ CREATE TABLE IF NOT EXISTS public.mvc_change_log (
 | §3.x 질문 풀 (Q-x1/x2 BEI, x3 SIT) | mvc_questions |
 | §3.x BARS 5점 표 | mvc_bars |
 | §3.x Red/Green Flag | mvc_flags |
-| §4 직무 컨텍스트 매트릭스 (9직무×5가치) | mvc_position_context |
+| §4 직무 컨텍스트 매트릭스 (N직무×5가치) | mvc_position_context |
 
 ```sql
 -- 예시 (VALUE_1)
 INSERT INTO public.mvc_values(value_key,name,definition,go_nogo_criterion,sort_order)
-VALUES ('VALUE_1','VALUE_1 (연대)','<가치 정의 placeholder>',
+VALUES ('VALUE_1','VALUE_1 (<가치명>)','<가치 정의 placeholder>',
         '''우리''보다 ''나''를 일관되게 우선시하는 태도가 답변 2개 이상에서 관찰될 때',1);
 INSERT INTO public.mvc_questions(value_key,qtype,stem_text,sort_order) VALUES
  ('VALUE_1','BEI','팀 또는 부서를 넘어서 협력하여…',1),
@@ -95,7 +95,7 @@ INSERT INTO public.mvc_questions(value_key,qtype,stem_text,sort_order) VALUES
 -- mvc_bars / mvc_flags / mvc_position_context 동일 패턴으로 5가치 전부
 ```
 
-> 전체 INSERT는 `mvc/_core_values.md` 내용을 그대로 옮기며, **새 문구를 창작하지 않는다** (시드 충실 복제). 5가치 × (정의1·질문3·BARS5·flag다수) + 9직무×5컨텍스트.
+> 전체 INSERT는 `mvc/_core_values.md` 내용을 그대로 옮기며, **새 문구를 창작하지 않는다** (시드 충실 복제). 5가치 × (정의1·질문3·BARS5·flag다수) + 등록 직무 N개×5컨텍스트.
 
 **실행 정책 (Critical)**: 실제 CREATE/INSERT는 **Supabase MCP 연결 + 사용자 명시 승인** 후 1회 수행한다. 스킬은 임의로 DB 스키마를 만들지 않는다. 미실행 상태에서는 파일 폴백으로 정상 동작한다.
 
@@ -121,7 +121,7 @@ ORDER BY v.sort_order, q.sort_order;
 
 ## 4. MVC 편집 워크플로우 ("수정 가능")
 
-사용자가 "MVC 수정/편집"(예: "VALUE_1 정의 바꿔줘", "frontend FOCUS 컨텍스트 수정") 요청 시:
+사용자가 "MVC 수정/편집"(예: "VALUE_1 정의 바꿔줘", "<직무> VALUE_3 컨텍스트 수정") 요청 시:
 
 | 단계 | 동작 |
 |---|---|

@@ -1,4 +1,4 @@
-# output_template.md — 출력 .md 변수 치환 템플릿 (v0.1.1 표 중심)
+# output_template.md — 출력 .md 변수 치환 템플릿 (v0.3.0 표 중심)
 
 **원칙**: 어떤 직무가 입력되든 동일 구조로 출력. 변수만 치환되며, 역량 개수·가중치는 가변. **모든 보고는 표(table) 우선** — 산문 대신 표를 사용하여 가독성 극대화.
 
@@ -102,8 +102,8 @@
 | `{{generated_at}}` | date | 생성 시각 | NOW() |
 | `{{candidate_or_purpose}}` | string | 후보자명 또는 면접 목적 | 사용자 입력 |
 | `{{competencies[]}}` | array | 역량 N개 | interview_questions JOIN |
-| `{{mvc[]}}` | array | 5 가치 | mvc/_core_values.md (모든 직무 동일) |
-| `{{position_context_map}}` | object | 직무 친화 컨텍스트 | mvc/_core_values.md §4 |
+| `{{mvc[]}}` | array | 5 가치 | Supabase `mvc_*` fetch (`mvc_schema.md §3`) → 폴백: mvc/_core_values.md |
+| `{{position_context_map}}` | object | 직무 친화 컨텍스트 | `mvc_position_context` 테이블 → 폴백: _core_values.md §4 |
 | `{{jd_hashes}}` | object | derived_from_jd_hash | INSERT 시점 |
 | `{{academic_refs}}` | array | 학술 근거 | static |
 
@@ -260,7 +260,7 @@ academic_basis: {{academic_refs}}
   - qualifications hash: `{{jd_hashes.qualifications}}`
   - preferred hash: `{{jd_hashes.preferred}}`
 - **interview_questions ID**: {{question_ids[]}}
-- **MVC 모듈**: `mvc/_core_values.md` v{{mvc_version}}
+- **MVC 모듈**: Supabase `mvc_*` 테이블 (폴백 시 `mvc/_core_values.md` 시드) v{{mvc_version}}
 - **학술 근거**: {{academic_refs}}
 
 ## 9. 변경 이력 알림 (있을 시)
@@ -309,10 +309,4 @@ xlsx 산출 시 별도 템플릿 (sheets):
 5. MVC 평가
 6. 종합 의사결정
 
-xlsx 생성 코드는 `scripts/generate_xlsx.py` (별도, 본 v0.1 범위 외).
-
----
-
-## 6. 부록: examples/ 와의 차이
-
-`examples/frontend_engineer_sample.md`은 본 템플릿으로 **frontend 변수를 치환한 결과**의 한 예시. 다른 직무는 같은 템플릿 + 다른 변수로 다르게 생성. examples는 LLM 컨텍스트에 주입되지 않음.
+xlsx 생성 스크립트는 본 플러그인에 포함되지 않는다 (별도 구현, 범위 외).
